@@ -34,7 +34,7 @@ When bugs in the musl library are fixed or the version is updated, you need to c
 
 ## Usage<a name="section68313135353"></a>
 
--   Add the bin directory to the PATH environment variable. For details about how to set up the compilation environment, see  [Setting Up the Hi3518 Development Environment](https://gitee.com/openharmony/docs/blob/master/docs-en/quick-start/setting-up-the-hi3518-development-environment.md)  and  [Setting Up the Hi3516 Development Environment](https://gitee.com/openharmony/docs/blob/master/docs-en/quick-start/setting-up-the-hi3516-development-environment.md).
+-   Add the bin directory to the PATH environment variable. For details about how to set up the compilation environment, see  [Setting Up the Hi3518 Development Environment](https://gitee.com/openharmony/docs/blob/master/en/device-dev/quick-start/setting-up-the-hi3518-development-environment.md)  and  [Setting Up the Hi3516 Development Environment](https://gitee.com/openharmony/docs/blob/master/en/device-dev/quick-start/setting-up-the-hi3516-development-environment.md).
 -   The following is a sample script for compiling the  **helloworld.c**  program:
 
 ```
@@ -45,5 +45,7 @@ The compiler directory is  **\~/llvm**.
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
-**[prebuilts\_lite\_sysroot](https://gitee.com/openharmony/prebuilts_lite_sysroot)**
+[Kernel subsystem](https://gitee.com/openharmony/docs/blob/master/en/readme/kernel.md)
+
+**prebuilts\_lite\_sysroot**
 
