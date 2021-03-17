@@ -34,7 +34,7 @@ musl库bug修复或者新版本更新时，需要重新编译构建新的libc库
 
 ## 使用说明<a name="section68313135353"></a>
 
--   将clang编译器bin目录设置到环境变量中，编译环境的搭建可以参考（[for HI3518EV300](https://gitee.com/openharmony/docs/blob/master/quick-start/Hi3518%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83.md)，  [for HI3516DV300](https://gitee.com/openharmony/docs/blob/master/quick-start/Hi3516%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83.md)）。
+-   将clang编译器bin目录设置到环境变量中，编译环境的搭建可以参考（[for HI3518EV300](https://gitee.com/openharmony/docs/blob/master/zh-cn/device-dev/quick-start/%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83.md)，  [for HI3516DV300](https://gitee.com/openharmony/docs/blob/master/zh-cn/device-dev/quick-start/Hi3516%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83.md)）。
 -   编译用户程序helloworld.c示例如下：
 
 ```
@@ -45,5 +45,7 @@ clang -o helloworld helloworld.c -target arm-liteos -L ~/llvm/lib/clang/9.0.0/li
 
 ## 相关仓<a name="section1371113476307"></a>
 
-**[prebuilts\_lite\_sysroot](https://gitee.com/openharmony/prebuilts_lite_sysroot)**
+[内核子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/%E5%86%85%E6%A0%B8%E5%AD%90%E7%B3%BB%E7%BB%9F.md)
+
+**prebuilts\_lite\_sysroot**
 
