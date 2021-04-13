@@ -58,7 +58,7 @@ echo "#define __user" >> ${TMP_DIR_ORI}/uapi/linux/compiler.h
 echo "#endif" >> ${TMP_DIR_ORI}/uapi/linux/compiler.h
 
 pushd ${PRJ_ROOT}
-python2 prebuilts/lite/sysroot/build/update_headers.py 2>/dev/null
+python prebuilts/lite/sysroot/build/update_headers.py 2>/dev/null
 popd
 
 cp -rf  ${TMP_DIR}/uapi/* ${MUSL_DIR}/
