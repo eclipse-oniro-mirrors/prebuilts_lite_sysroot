@@ -88,7 +88,8 @@ CROSS_COMPILE = ${CROSS_COMPILE}
 
 # Compiler for the target
 CC = ${LITEOS_COMPILER_PATH}/bin/clang
-CFLAGS = -std=c99 -pipe -O3 --target=arm-liteos -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=softfp
+CFLAGS = -std=c99 -pipe -O3 --target=arm-liteos -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=softfp -nostdinc
+CFLAGS += -I/${SYSROOT}/../../usr/include/${TARGET}
 CFLAGS += -Wall -Wno-missing-braces
 
 # Enable debug info.
