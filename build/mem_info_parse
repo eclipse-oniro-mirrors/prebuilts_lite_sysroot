@@ -34,6 +34,7 @@ parse_line()
 {
     FILE_PATH=$(echo $1 | awk '{print $4}')
     ELF_FILE=${FILE_PATH##*/}
+    ELF_FILE=${ELF_FILE//[$'\t\r\n']}
     FLAG=false
     for i in $2; do
         if [ "${ELF_FILE}" = "$i" ]; then
