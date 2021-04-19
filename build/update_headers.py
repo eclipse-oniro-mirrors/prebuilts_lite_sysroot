@@ -72,19 +72,19 @@ key_list = [
 def deal_file(src):
     # file exist or not
     if not os.path.exists(src):
-        print 'Error: file - %s doesn\'t exist.'% src
+        print('Error: file - %s doesn\'t exist.'% src)
         return False
     if os.path.islink(src):
-        print 'Error: file - %s is a link.'
+        print('Error: file - %s is a link.'% src)
         return False
     filetype = (os.path.splitext(src))[1]
     if not filetype in ['.c','.h','.cpp','.hh','.cc']:
         return False
     try:
         if not os.access(src, os.W_OK):
-            os.chmod(src, 0664)
+            os.chmod(src, 0o664)
     except:
-        print 'Error: you can not chang %s\'s mode.'% src
+        print('Error: you can not chang %s\'s mode.'% src)
 
     # del all comments
     inputf = open(src, 'r')
@@ -125,7 +125,7 @@ def deal_file(src):
 def deal_dir(src):
     #  dir exist or not
     if not os.path.exists(src):
-        print 'Error: dir - %s is not exist.'%s (src)
+        print('Error: dir - %s is not exist.'% src)
         return False
     filelists = os.listdir(src)
     for eachfile in filelists:
