@@ -14,17 +14,17 @@
 #limitations under the License.
 
 set -e
-
+readonly PRJ_ROOT="$PWD/../../../../../"
 readonly MUSL_DIR="${PWD}/musl"
 readonly MUSL_CUR_DIR="./musl"
 readonly MUSL_DEBUG_DIR="${PWD}/musl_debug"
 readonly MUSL_DEBUG_CUR_DIR="./musl_debug"
 readonly MUSL_PATCH="${PWD}/musl-debug.patch"
 readonly SYSROOT_DEBUG="${PWD}/usr_debug"
-readonly MUSL_SOURCE="${PWD}/../../../../third_party/musl/*"
+readonly MUSL_SOURCE="${PRJ_ROOT}/third_party/musl/*"
 readonly OPTIMIZE_DIR="${PWD}/optimized-routines"
-readonly OPTIMIZE_SOURCE="${PWD}/../../../../third_party/optimized-routines/*"
-readonly LITEOSTOPDIR="${PWD}/../../../../kernel/liteos_a"
+readonly OPTIMIZE_SOURCE="${PRJ_ROOT}/third_party/optimized-routines/*"
+readonly LITEOSTOPDIR="${PRJ_ROOT}/kernel/liteos_a"
 readonly SYSROOT="${PWD}/usr"
 
 BUILD=`gcc -dumpmachine`
@@ -89,7 +89,7 @@ CROSS_COMPILE = ${CROSS_COMPILE}
 # Compiler for the target
 CC = ${LITEOS_COMPILER_PATH}/bin/clang
 CFLAGS = -std=c99 -pipe -O3 --target=arm-liteos -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=softfp -nostdinc
-CFLAGS += -I/${SYSROOT}/../../usr/include/${TARGET}
+CFLAGS += -I/${SYSROOT}/../../../usr/include/${TARGET}
 CFLAGS += -Wall -Wno-missing-braces
 
 # Enable debug info.
@@ -98,7 +98,7 @@ CFLAGS += -Wall -Wno-missing-braces
 
 # Use with clang.
 CFLAGS += -ffp-contract=fast
-LDFLAGS = -L${LITEOS_COMPILER_PATH}/lib/clang/9.0.0/lib/${TARGET}/a7_softfp_neon-vfpv4 -L${SYSROOT}/../../usr/lib/${TARGET}/a7_softfp_neon-vfpv4 -lclang_rt.builtins -fuse-ld=lld -nostartfiles
+LDFLAGS = -L${LITEOS_COMPILER_PATH}/lib/clang/9.0.0/lib/${TARGET}/a7_softfp_neon-vfpv4 -L${SYSROOT}/../../../usr/lib/${TARGET}/a7_softfp_neon-vfpv4 -lclang_rt.builtins -fuse-ld=lld -nostartfiles
 
 EOF
     exec 1>&3 3>&-
