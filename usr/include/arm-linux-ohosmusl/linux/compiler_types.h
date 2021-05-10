@@ -118,8 +118,8 @@ struct ftrace_likely_data {
 #define __native_word(t) \
 	(sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
 	 sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-#ifndef __attribute__((__const__))
-#define __attribute__((__const__))	__attribute__((__const__))
+#ifndef __attribute_const__
+#define __attribute_const__	__attribute__((__const__))
 #endif
 #ifndef __noclone
 #define __noclone

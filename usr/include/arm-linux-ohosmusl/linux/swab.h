@@ -32,7 +32,7 @@
 #define ___constant_swahb32(x) ((__u32)(			\
 	(((__u32)(x) & (__u32)0x00ff00ffUL) << 8) |		\
 	(((__u32)(x) & (__u32)0xff00ff00UL) >> 8)))
-static inline __attribute__((__const__)) __u16 __fswab16(__u16 val)
+static inline __attribute_const__ __u16 __fswab16(__u16 val)
 {
 #if defined (__arch_swab16)
 	return __arch_swab16(val);
@@ -40,7 +40,7 @@ static inline __attribute__((__const__)) __u16 __fswab16(__u16 val)
 	return ___constant_swab16(val);
 #endif
 }
-static inline __attribute__((__const__)) __u32 __fswab32(__u32 val)
+static inline __attribute_const__ __u32 __fswab32(__u32 val)
 {
 #if defined(__arch_swab32)
 	return __arch_swab32(val);
@@ -48,7 +48,7 @@ static inline __attribute__((__const__)) __u32 __fswab32(__u32 val)
 	return ___constant_swab32(val);
 #endif
 }
-static inline __attribute__((__const__)) __u64 __fswab64(__u64 val)
+static inline __attribute_const__ __u64 __fswab64(__u64 val)
 {
 #if defined (__arch_swab64)
 	return __arch_swab64(val);
@@ -60,7 +60,7 @@ static inline __attribute__((__const__)) __u64 __fswab64(__u64 val)
 	return ___constant_swab64(val);
 #endif
 }
-static inline __attribute__((__const__)) __u32 __fswahw32(__u32 val)
+static inline __attribute_const__ __u32 __fswahw32(__u32 val)
 {
 #ifdef __arch_swahw32
 	return __arch_swahw32(val);
@@ -68,7 +68,7 @@ static inline __attribute__((__const__)) __u32 __fswahw32(__u32 val)
 	return ___constant_swahw32(val);
 #endif
 }
-static inline __attribute__((__const__)) __u32 __fswahb32(__u32 val)
+static inline __attribute_const__ __u32 __fswahb32(__u32 val)
 {
 #ifdef __arch_swahb32
 	return __arch_swahb32(val);
