@@ -48,7 +48,6 @@ key_list = [
     ["SIGRTMIN",							".",					"SIGRTMIN",								"__SIGRTMIN"],
     ["SIGRTMAX",							".",					"SIGRTMAX",								"__SIGRTMAX"],
     ["struct udphdr",						".",					"struct udphdr",						"struct __kernel_udphdr"],
-    ["__attribute_const__",					".",					"__attribute_const__",					"__attribute__((__const__))"],
     ["struct __kernel_sockaddr_storage",	".",					"struct __kernel_sockaddr_storage",		"struct sockaddr_storage"],
     ["off_t",								"asm-mips/asm/stat.h",	"off_t",								"__kernel_off_t"],
     ["#ifndef __EXPORTED_HEADERS__",		".",					"#ifndef __EXPORTED_HEADERS__",			"#if 0 \/*__EXPORTED_HEADERS__*\/"],
