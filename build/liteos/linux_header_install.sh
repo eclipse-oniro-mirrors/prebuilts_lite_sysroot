@@ -17,7 +17,7 @@
 
 set -e
 
-PRJ_ROOT="$PWD/../../../../"
+PRJ_ROOT="$PWD/../../../../../"
 KERNEL_ROOT="$PRJ_ROOT/third_party/Linux_Kernel"
 ARM_HDR="$PRJ_ROOT/third_party/Linux_Kernel/hdr_install/arm_header"
 OUT_HDR="$PRJ_ROOT/prebuilts/lite/sysroot/thirdparty/linux_headers_install"

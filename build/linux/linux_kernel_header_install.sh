@@ -17,7 +17,7 @@
 
 set -e
 ARM_TYPE=arm
-PRJ_ROOT="$PWD/../../../../"
+PRJ_ROOT="$PWD/../../../../../"
 KERNEL_ROOT="$PRJ_ROOT/kernel/linux-4.19"
 ARM_HDR="$KERNEL_ROOT/hdr_install/${ARM_TYPE}_header"
 OUT_HDR="$PRJ_ROOT/prebuilts/lite/sysroot/thirdparty/linux_headers_install"

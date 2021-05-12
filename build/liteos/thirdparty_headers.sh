@@ -17,7 +17,7 @@
 
 set -e
 
-PRJ_ROOT="${PWD}/../../../../"
+PRJ_ROOT="${PWD}/../../../../../"
 LINUX_HDR="${PRJ_ROOT}/prebuilts/lite/sysroot/thirdparty/linux_headers_install"
 TMP_DIR_ORI="${PRJ_ROOT}/prebuilts/lite/sysroot/ohos_tmp_ori"
 TMP_DIR="${PRJ_ROOT}/prebuilts/lite/sysroot/ohos_tmp"
@@ -58,7 +58,7 @@ echo "#define __user" >> ${TMP_DIR_ORI}/uapi/linux/compiler.h
 echo "#endif" >> ${TMP_DIR_ORI}/uapi/linux/compiler.h
 
 pushd ${PRJ_ROOT}
-python prebuilts/lite/sysroot/build/update_headers.py 2>/dev/null
+python prebuilts/lite/sysroot/build/liteos/update_headers.py 2>/dev/null
 popd
 
 cp -rf  ${TMP_DIR}/uapi/* ${MUSL_DIR}/
