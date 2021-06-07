@@ -7,6 +7,7 @@
 #define _UAPI__LINUX_BPF_H__
 #include <linux/types.h>
 #include <linux/bpf_common.h>
+#define BPF_JMP32	0x06
 #define BPF_ALU64	0x07
 #define BPF_DW		0x18
 #define BPF_XADD	0xc0
