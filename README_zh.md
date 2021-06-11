@@ -16,7 +16,6 @@ sysroot是一个用作clang编译器查找标准库和头文件的根目录，�
 ```
 /prebuilts/lite/sysroot
 ├── build                   # 工具链构建目录，包括构建脚本
-├── thirdparty              # 临时生成的工具链构建所需的三方头文件
 ├── usr                     # 对外C库及头文件
 │   ├── include             # 对外头文件存放目录
 │   │  └── arm-liteos       # 工具链对应的芯片架构
@@ -30,7 +29,7 @@ sysroot是一个用作clang编译器查找标准库和头文件的根目录，�
 
 ## 编译构建<a name="section137768191623"></a>
 
-musl库bug修复或者新版本更新时，需要重新编译构建新的libc库。分别执行build目录下的thirdparty\_headers.sh和build\_musl\_clang.sh脚本即可编译构建出新的libc库，存放于/prebuilts/lite/sysroot/build/usr目录下，然后替换/prebuilts/lite/sysroot/usr目录下对应的头文件及libc库即可。
+musl库bug修复或者新版本更新时，需要重新编译构建新的libc库。在build目录下执行`make`即可编译构建出新的libc库，存放于/prebuilts/lite/sysroot/usr目录下。
 
 ## 使用说明<a name="section68313135353"></a>
 
@@ -38,7 +37,7 @@ musl库bug修复或者新版本更新时，需要重新编译构建新的libc库
 -   编译用户程序helloworld.c示例如下：
 
 ```
-clang -o helloworld helloworld.c -target arm-liteos -L ~/llvm/lib/clang/9.0.0/lib/arm-liteos/a7_softfp_neon-vfpv4 --sysroot=/usr/xxx/OS/prebuilts/lite/sysroot/
+clang -o helloworld helloworld.c -target arm-liteos --sysroot=/my_ohos_root_path/prebuilts/lite/sysroot/
 ```
 
 其中，编译器目录为\~/llvm。

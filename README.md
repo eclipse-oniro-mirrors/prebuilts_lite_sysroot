@@ -16,7 +16,6 @@
 ```
 /prebuilts/lite/sysroot
 ├── build                   # Toolchain building (including build scripts)
-├── thirdparty              # Temporary third-party header files required for toolchain building
 ├── usr                     # C library and header files exposed externally
 │   ├── include             # Header files exposed externally
 │   │  └── arm-liteos       # Chip architecture for the toolchain
@@ -30,7 +29,7 @@
 
 ## Compilation and Building<a name="section137768191623"></a>
 
-When bugs in the musl library are fixed or the version is updated, you need to compile and build a new libc library by executing  **thirdparty\_headers.sh**  and  **build\_musl\_clang.sh**  scripts in the  **build**  directory, respectively. The new libc library will be stored in the  **/prebuilts/lite/sysroot/build/usr**  directory. Then, you need to replace the header files and libc library in the  **/prebuilts/lite/sysroot/usr**  directory.
+When bugs in the musl library are fixed or the version is updated, you need to compile and build a new libc library by executing `make`  in the  **build**  directory, respectively. The new libc library will be stored in the  **/prebuilts/lite/sysroot/usr**  directory.
 
 ## Usage<a name="section68313135353"></a>
 
@@ -38,7 +37,7 @@ When bugs in the musl library are fixed or the version is updated, you need to c
 -   The following is a sample script for compiling the  **helloworld.c**  program:
 
 ```
-clang -o helloworld helloworld.c -target arm-liteos -L ~/llvm/lib/clang/9.0.0/lib/arm-liteos/a7_softfp_neon-vfpv4 --sysroot=/usr/xxx/OS/prebuilts/lite/sysroot/
+clang -o helloworld helloworld.c -target arm-liteos --sysroot=/my_ohos_root_path/prebuilts/lite/sysroot/
 ```
 
 The compiler directory is  **\~/llvm**.

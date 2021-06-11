@@ -1,1 +1,5 @@
 apidoc
+usr
+lib
+build/linux_header_install_for_*
+build/musl_copy_for_*
