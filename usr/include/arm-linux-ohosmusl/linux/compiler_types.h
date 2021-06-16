@@ -174,12 +174,6 @@ struct ftrace_likely_data {
 #else
 # define __gnu_inline
 #endif
-#ifndef __norecordmcount
-#define __norecordmcount
-#endif
-#ifndef __nocfi
-#define __nocfi
-#endif
 #if !defined(CONFIG_ARCH_SUPPORTS_OPTIMIZED_INLINING) || \
 	!defined(CONFIG_OPTIMIZE_INLINING)
 #define inline \
