@@ -466,12 +466,11 @@ pid_t gettid(void);
 #ifdef _GNU_SOURCE
 #ifndef TEMP_FAILURE_RETRY
 #define MUSL_TEMP_FAILURE_RETRY(expression) \  
-  (__extension__\  
-   ({ long int __result;\  
-       do __result = (long int)(expression);\  
-       while(__result == -1L&& errno == EINTR);\  
-       __result;})\  
-#endif
+    (__extension__\
+        ({ long int __result;\
+            do __result = (long int)(expression);\
+            while(__result == -1L&& errno == EINTR);\
+        __result;})\
 
 #define TEMP_FAILURE_RETRY MUSL_TEMP_FAILURE_RETRY
 #endif
