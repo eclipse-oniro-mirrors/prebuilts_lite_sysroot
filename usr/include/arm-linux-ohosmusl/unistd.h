@@ -190,6 +190,7 @@ int syncfs(int);
 int euidaccess(const char *, int);
 int eaccess(const char *, int);
 ssize_t copy_file_range(int, off_t *, int, off_t *, size_t, unsigned);
+pid_t gettid(void);
 #endif
 
 #if defined(_LARGEFILE64_SOURCE) || defined(_GNU_SOURCE)
@@ -461,6 +462,20 @@ ssize_t copy_file_range(int, off_t *, int, off_t *, size_t, unsigned);
 #define _CS_POSIX_V7_LPBIG_OFFBIG_LINTFLAGS	1147
 #define _CS_V6_ENV	1148
 #define _CS_V7_ENV	1149
+
+#ifdef _GNU_SOURCE
+#ifndef TEMP_FAILURE_RETRY
+#define MUSL_TEMP_FAILURE_RETRY(expression) \  
+  (__extension__\  
+   ({ long int __result;\  
+       do __result = (long int)(expression);\  
+       while(__result == -1L&& errno == EINTR);\  
+       __result;})\  
+#endif
+
+#define TEMP_FAILURE_RETRY MUSL_TEMP_FAILURE_RETRY
+#endif
+#endif
 
 #ifdef __cplusplus
 }
