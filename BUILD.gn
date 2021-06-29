@@ -27,11 +27,9 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-config("sysroot_flags") {
-    cflags = [ "--sysroot="+rebase_path(".") ]
-}
-
 group("sysroot") {
-    deps = [ "build" ]
-    public_configs = [ ":sysroot_flags" ]
+    print("ohos_build_compiler:", ohos_build_compiler)
+    if (ohos_build_compiler == "clang") {
+        deps = [ "build" ]
+    }
 }
