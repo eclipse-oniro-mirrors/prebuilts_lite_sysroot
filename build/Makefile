@@ -98,15 +98,15 @@ nuttx_header_install_for_liteos_a_user: musl_copy_for_liteos_a_user
 	$(HIDE) sed '/^#include/d' $(NUTTXDIR)/include/nuttx/video/fb.h | sed 's,FAR ,,g' | sed 's,LosVmMapRegion,void,g' > $</include/fb.h
 
 linux_header_install_for_liteos_a_user: musl_copy_for_liteos_a_user
-	$(HIDE) mkdir -p $@
 	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$@ -C $(LINUXKERNELDIR)
 	$(HIDE) install -p -m 644 -D $@/include/linux/capability.h $</include/linux/capability.h
 	$(HIDE) echo "$$LINUX_TYPES_H" > $</include/linux/types.h
 
 linux_header_install_for_linux_user: musl_copy_for_linux_user
-	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$< -C $(LINUXDIR)
-	$(HIDE) find $< \( -name .install -o -name ..install.cmd \) -delete
-	$(HIDE) find $< -type d -empty -delete
+	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$@ -C $(LINUXDIR)
+	$(HIDE) find $@ \( -name .install -o -name ..install.cmd \) -delete
+	$(HIDE) find $@ -type d -empty -delete
+	$(HIDE) cp -rfp $@/* $</
 
 musl_patch_for_liteos_a_user: nuttx_header_install_for_liteos_a_user
 musl_patch_for_liteos_a_user: linux_header_install_for_liteos_a_user
@@ -128,6 +128,7 @@ musl_install_for_linux_user: musl_patch_for_linux_user
 	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
 		CC="$(CC)" CROSS_COMPILE=$(CROSS_COMPILE) CFLAGS="$(CFLAGS)" >/dev/null && \
 	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
+	$(HIDE) cp -rfp linux_header_install_for_linux_user/include/* $(SYSROOTDIR)/usr/include/$(TARGET)
 
 ifeq ($(BUILD_DEBUG),true)
 musl_install_for_liteos_a_user: CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I $(shell $(CC) -print-file-name=)include
