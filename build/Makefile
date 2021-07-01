@@ -29,8 +29,9 @@
 
 ARCH = arm
 TARGET = $(ARCH)-liteos
-CROSS_COMPILE = llvm-
-CC = clang --target=$(TARGET) $(ARCH_CFLAGS)
+CLANG ?= clang
+CROSS_COMPILE = $(CLANG:%clang=%)llvm-
+CC = $(CLANG) --target=$(TARGET) $(ARCH_CFLAGS)
 MULTILIB = $(patsubst $(shell $(CC) -print-file-name=)%/,%,$(dir $(shell $(CC) -print-libgcc-file-name)))
 MUSLBUILDDIR = build_$(ARCH)$(subst $(eval) ,,$(patsubst -%,_%,$(sort $(ARCH_CFLAGS))))
 HIDE = @
