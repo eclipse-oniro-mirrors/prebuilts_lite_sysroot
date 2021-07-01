@@ -39,29 +39,34 @@ if (ohos_kernel_type == "liteos_a") {
 assert(targets != "", "Unsupported ohos_kernel_type: $ohos_kernel_type")
 
 sysroot_path = rebase_path(ohos_current_sysroot)
-build_deps = []
-if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
-    group("empty") {
-    }
 
-    build_ext_component("build_sysroot") {
+# deps to this group to mark the target as prebuilts and/or avoid cycle dependencies
+group("mark_as_prebuilts") {
+}
+
+build_ext_component("build_sysroot") {
+    deps = [ ":mark_as_prebuilts" ]
+    if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
         exec_path = rebase_path(target_out_dir)
         makefile = rebase_path("Makefile", exec_path)
         arch_cflags = string_join(" ", target_arch_cflags)
         command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
         command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
         command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
-
-        # copy standard libraries libc.so and libc++.so to lib out dir
-        libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
-        libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
-        lib_out_dir = rebase_path(root_out_dir)+"/libs/"
-        command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
-
-        deps = [ ":empty" ] # we made deps non-empty on purpose
+        if (ohos_kernel_type == "linux") {
+            deps += [ "//kernel/linux/patches:linux_kernel" ]
+            command += " LINUXDIR="+rebase_path("$root_out_dir/kernel/linux-4.19")
+            command += " PREBUILTLINUXHDRDIR="+rebase_path("//kernel/linux/patches/linux-4.19/prebuilts/usr/include")
+        }
+    } else {
+        command = "echo $board_configed_sysroot"
     }
 
-    build_deps += [ ":build_sysroot" ]
+    # copy standard libraries libc.so and libc++.so to lib out dir
+    libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
+    libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
+    lib_out_dir = rebase_path("$root_out_dir/libs/")
+    command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
 }
 
 config("sysroot_flags") {
@@ -72,7 +77,5 @@ config("sysroot_flags") {
 
 group("build") {
     all_dependent_configs = [ ":sysroot_flags" ]
-    if (build_deps != []) {
-        deps = build_deps
-    }
+    deps = [ ":build_sysroot" ]
 }

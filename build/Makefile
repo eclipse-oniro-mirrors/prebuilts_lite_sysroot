@@ -103,12 +103,6 @@ linux_header_install_for_liteos_a_user: musl_copy_for_liteos_a_user
 	$(HIDE) install -p -m 644 -D $@/include/linux/capability.h $</include/linux/capability.h
 	$(HIDE) echo "$$LINUX_TYPES_H" > $</include/linux/types.h
 
-linux_header_install_for_linux_user: musl_copy_for_linux_user
-	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$@ -C $(LINUXDIR)
-	$(HIDE) find $@ \( -name .install -o -name ..install.cmd \) -delete
-	$(HIDE) find $@ -type d -empty -delete
-	$(HIDE) cp -rfp $@/* $</
-
 musl_patch_for_liteos_a_user: nuttx_header_install_for_liteos_a_user
 musl_patch_for_liteos_a_user: linux_header_install_for_liteos_a_user
 musl_patch_for_liteos_a_user: optimized_routines_install_for_liteos_a_user
@@ -118,18 +112,6 @@ musl_patch_for_liteos_a_user: musl_copy_for_liteos_a_user
 musl_patch_for_liteos_a_user_debug: musl_patch_for_liteos_a_user
 musl_patch_for_liteos_a_user_debug: musl_copy_for_liteos_a_user
 	$(HIDE) cp -rfp $(MUSLDIR)/porting/liteos_a/user_debug/* $</
-
-musl_patch_for_linux_user: linux_header_install_for_linux_user
-musl_patch_for_linux_user: musl_copy_for_linux_user
-	$(HIDE) cp -rfp $(MUSLDIR)/porting/linux/user/* $</
-
-musl_install_for_linux_user: TARGET = $(ARCH)-linux-ohosmusl
-musl_install_for_linux_user: musl_patch_for_linux_user
-	$(HIDE) cd musl_copy_for_linux_user && mkdir -p $(MUSLBUILDDIR) && cd $(MUSLBUILDDIR) && \
-	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
-		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
-	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
-	$(HIDE) cp -rfp linux_header_install_for_linux_user/include/* $(SYSROOTDIR)/usr/include/$(TARGET)
 
 ifeq ($(BUILD_DEBUG),true)
 musl_install_for_liteos_a_user: CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I $(shell $(CC) -print-file-name=)include
@@ -142,7 +124,26 @@ musl_install_for_liteos_a_user: musl_patch_for_liteos_a_user
 	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
 		$(if $(LDFLAGS),LDFLAGS="$(LDFLAGS)",) \
 		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
-	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
+	make -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
+
+ifeq ($(wildcard $(PREBUILTLINUXHDRDIR)),)
+PREBUILTLINUXHDRDIR = $(shell pwd)/linux_header_install_for_linux_user/include
+linux_header_install_for_linux_user:
+	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$@ -C $(LINUXDIR)
+musl_patch_for_linux_user: linux_header_install_for_linux_user
+endif
+
+musl_patch_for_linux_user: musl_copy_for_linux_user
+	$(HIDE) cp -rfp $(MUSLDIR)/porting/linux/user/* $</
+
+musl_install_for_linux_user: CFLAGS += -I $(PREBUILTLINUXHDRDIR)
+musl_install_for_linux_user: TARGET = $(ARCH)-linux-ohosmusl
+musl_install_for_linux_user: musl_patch_for_linux_user
+	$(HIDE) cd musl_copy_for_linux_user && mkdir -p $(MUSLBUILDDIR) && cd $(MUSLBUILDDIR) && \
+	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
+		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
+	make -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
+	$(HIDE) cp -rfp $(PREBUILTLINUXHDRDIR)/* $(SYSROOTDIR)/usr/include/$(TARGET)
 
 ifeq ($(ARCH),arm)
 ifeq ($(BUILD_ALL_MULTILIB),true)
@@ -159,13 +160,14 @@ ifneq ($$(ARCH_CFLAGS),$$($(2)))
 all: $$(if $$(filter linux_user,$$(TARGETS)),musl_install_for_linux_user$(1),)
 all: $$(if $$(filter liteos_a_user,$$(TARGETS)),musl_install_for_liteos_a_user$(1),)
 
+musl_install_for_linux_user$(1): CFLAGS += -I $$(PREBUILTLINUXHDRDIR)
 musl_install_for_linux_user$(1): TARGET = $$(ARCH)-linux-ohosmusl
 musl_install_for_linux_user$(1): override ARCH_CFLAGS = $$($(2))
 musl_install_for_linux_user$(1): musl_install_for_linux_user
 	$$(HIDE) cd musl_copy_for_linux_user && mkdir -p $$(MUSLBUILDDIR) && cd $$(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$$(TARGET) --libdir=/usr/$$(MULTILIB) \
 		CC="$$(CC)" CROSS_COMPILE="$$(CROSS_COMPILE)" CFLAGS="$$(CFLAGS)" >/dev/null && \
-	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-libs DESTDIR=$$(SYSROOTDIR)
+	make -sj install-libs DESTDIR=$$(SYSROOTDIR)
 
 ifeq ($$(BUILD_DEBUG),true)
 musl_install_for_liteos_a_user$(1): CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I $$(shell $$(CC) -print-file-name=)include
@@ -178,7 +180,7 @@ musl_install_for_liteos_a_user$(1): musl_install_for_liteos_a_user
 	../configure --prefix=/usr --target=$$(TARGET) --libdir=/usr/$$(MULTILIB) \
 		$$(if $$(LDFLAGS),LDFLAGS="$$(LDFLAGS)",) \
 		CC="$$(CC)" CROSS_COMPILE="$$(CROSS_COMPILE)" CFLAGS="$$(CFLAGS)" >/dev/null && \
-	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-libs DESTDIR=$$(SYSROOTDIR)
+	make -sj install-libs DESTDIR=$$(SYSROOTDIR)
 
 endif
 endef
