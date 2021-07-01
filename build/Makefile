@@ -127,7 +127,7 @@ musl_install_for_linux_user: TARGET = $(ARCH)-linux-ohosmusl
 musl_install_for_linux_user: musl_patch_for_linux_user
 	$(HIDE) cd musl_copy_for_linux_user && mkdir -p $(MUSLBUILDDIR) && cd $(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
-		CC="$(CC)" CROSS_COMPILE=$(CROSS_COMPILE) CFLAGS="$(CFLAGS)" >/dev/null && \
+		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
 	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
 	$(HIDE) cp -rfp linux_header_install_for_linux_user/include/* $(SYSROOTDIR)/usr/include/$(TARGET)
 
@@ -141,7 +141,7 @@ musl_install_for_liteos_a_user: musl_patch_for_liteos_a_user
 	$(HIDE) cd musl_copy_for_liteos_a_user && mkdir -p $(MUSLBUILDDIR) && cd $(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
 		$(if $(LDFLAGS),LDFLAGS="$(LDFLAGS)",) \
-		CC="$(CC)" CROSS_COMPILE=$(CROSS_COMPILE) CFLAGS="$(CFLAGS)" >/dev/null && \
+		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
 	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
 
 ifeq ($(ARCH),arm)
@@ -164,7 +164,7 @@ musl_install_for_linux_user$(1): override ARCH_CFLAGS = $$($(2))
 musl_install_for_linux_user$(1): musl_install_for_linux_user
 	$$(HIDE) cd musl_copy_for_linux_user && mkdir -p $$(MUSLBUILDDIR) && cd $$(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$$(TARGET) --libdir=/usr/$$(MULTILIB) \
-		CC="$$(CC)" CROSS_COMPILE=$$(CROSS_COMPILE) CFLAGS="$$(CFLAGS)" >/dev/null && \
+		CC="$$(CC)" CROSS_COMPILE="$$(CROSS_COMPILE)" CFLAGS="$$(CFLAGS)" >/dev/null && \
 	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-libs DESTDIR=$$(SYSROOTDIR)
 
 ifeq ($$(BUILD_DEBUG),true)
@@ -177,7 +177,7 @@ musl_install_for_liteos_a_user$(1): musl_install_for_liteos_a_user
 	$$(HIDE) cd musl_copy_for_liteos_a_user && mkdir -p $$(MUSLBUILDDIR) && cd $$(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$$(TARGET) --libdir=/usr/$$(MULTILIB) \
 		$$(if $$(LDFLAGS),LDFLAGS="$$(LDFLAGS)",) \
-		CC="$$(CC)" CROSS_COMPILE=$$(CROSS_COMPILE) CFLAGS="$$(CFLAGS)" >/dev/null && \
+		CC="$$(CC)" CROSS_COMPILE="$$(CROSS_COMPILE)" CFLAGS="$$(CFLAGS)" >/dev/null && \
 	sed 's, -m 644 , -m 444 ,g' Makefile | make -f- -sj install-libs DESTDIR=$$(SYSROOTDIR)
 
 endif

@@ -50,7 +50,7 @@ if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
         arch_cflags = string_join(" ", target_arch_cflags)
         command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
         command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
-        command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=$ohos_current_cc_command"
+        command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
 
         # copy standard libraries libc.so and libc++.so to lib out dir
         libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
