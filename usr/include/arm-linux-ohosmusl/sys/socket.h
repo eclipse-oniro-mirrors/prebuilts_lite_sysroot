@@ -19,6 +19,8 @@ extern "C" {
 
 #include <bits/socket.h>
 
+#include <linux/socket.h>
+
 struct msghdr {
 	void *msg_name;
 	socklen_t msg_namelen;
@@ -367,12 +369,6 @@ struct linger {
 struct sockaddr {
 	sa_family_t sa_family;
 	char sa_data[14];
-};
-
-struct sockaddr_storage {
-	sa_family_t ss_family;
-	char __ss_padding[128-sizeof(long)-sizeof(sa_family_t)];
-	unsigned long __ss_align;
 };
 
 int socket (int, int, int);
