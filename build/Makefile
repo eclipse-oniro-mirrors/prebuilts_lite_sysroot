@@ -100,8 +100,8 @@ nuttx_header_install_for_liteos_a_user: musl_copy_for_liteos_a_user
 	$(HIDE) sed '/^#include/d' $(NUTTXDIR)/include/nuttx/video/fb.h | sed 's,FAR ,,g' | sed 's,LosVmMapRegion,void,g' > $</include/fb.h
 
 linux_header_install_for_liteos_a_user: musl_copy_for_liteos_a_user
-	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$@ -C $(LINUXKERNELDIR)
-	$(HIDE) install -p -m 644 -D $@/include/linux/capability.h $</include/linux/capability.h
+	$(HIDE) make -sj headers_install ARCH=$(ARCH) O=$(shell pwd)/$@ -C $(LINUXKERNELDIR)
+	$(HIDE) install -p -m 644 -D $@/usr/include/linux/capability.h $</include/linux/capability.h
 	$(HIDE) echo "$$LINUX_TYPES_H" > $</include/linux/types.h
 
 musl_patch_for_liteos_a_user: nuttx_header_install_for_liteos_a_user
@@ -128,9 +128,9 @@ musl_install_for_liteos_a_user: musl_patch_for_liteos_a_user
 	make -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
 
 ifeq ($(wildcard $(LINUXHDRDIR)),)
-LINUXHDRDIR = $(shell pwd)/linux_header_install_for_linux_user/include
+LINUXHDRDIR = $(shell pwd)/linux_header_install_for_linux_user/usr/include
 linux_header_install_for_linux_user:
-	$(HIDE) make -sj headers_install ARCH=$(ARCH) INSTALL_HDR_PATH=$(shell pwd)/$@ -C $(LINUXDIR)
+	$(HIDE) make -sj headers_install ARCH=$(ARCH) O=$(shell pwd)/$@ -C $(LINUXDIR)
 musl_patch_for_linux_user: linux_header_install_for_linux_user
 endif
 
