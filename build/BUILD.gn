@@ -39,6 +39,7 @@ if (ohos_kernel_type == "liteos_a") {
 assert(targets != "", "Unsupported ohos_kernel_type: $ohos_kernel_type")
 
 sysroot_path = rebase_path(ohos_current_sysroot)
+arch_cflags = string_join(" ", target_arch_cflags)
 
 # deps to this group to mark the target as prebuilts and/or avoid cycle dependencies
 group("mark_as_prebuilts") {
@@ -49,7 +50,6 @@ build_ext_component("build_sysroot") {
     if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
         exec_path = rebase_path(target_out_dir)
         makefile = rebase_path("Makefile", exec_path)
-        arch_cflags = string_join(" ", target_arch_cflags)
         command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
         command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
         command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
