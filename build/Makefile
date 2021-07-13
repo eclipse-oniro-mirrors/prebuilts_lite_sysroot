@@ -33,7 +33,7 @@ CLANG ?= clang
 CROSS_COMPILE = $(CLANG:%clang=%)llvm-
 CC = $(CLANG) --target=$(TARGET) $(ARCH_CFLAGS)
 MULTILIB = $(patsubst $(shell $(CC) -print-file-name=)%/,%,$(dir $(shell $(CC) -print-libgcc-file-name)))
-MUSLBUILDDIR = build_$(ARCH)$(subst $(eval) ,,$(patsubst -%,_%,$(sort $(ARCH_CFLAGS))))
+MUSLBUILDDIR = build_$(ARCH)_$(subst /,_,$(MULTILIB))
 HIDE = @
 BUILD_DEBUG = false
 BUILD_ALL_MULTILIB = true
@@ -115,8 +115,8 @@ musl_patch_for_liteos_a_user_debug: musl_copy_for_liteos_a_user
 	$(HIDE) cp -rfp $(MUSLDIR)/porting/liteos_a/user_debug/* $</
 
 ifeq ($(BUILD_DEBUG),true)
-musl_install_for_liteos_a_user: CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I $(shell $(CC) -print-file-name=)include
-musl_install_for_liteos_a_user: LDFLAGS = -L $(dir $(shell $(CC) -print-libgcc-file-name)) -lunwind -L lib -ldl
+musl_install_for_liteos_a_user: CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I "$(shell $(CC) -print-file-name=include)"
+musl_install_for_liteos_a_user: LDFLAGS = $(shell $(CC) -print-file-name=libunwind.a) -Wl,--no-dependent-libraries
 musl_install_for_liteos_a_user: musl_patch_for_liteos_a_user_debug
 endif
 
@@ -125,7 +125,7 @@ musl_install_for_liteos_a_user: musl_patch_for_liteos_a_user
 	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
 		$(if $(LDFLAGS),LDFLAGS="$(LDFLAGS)",) \
 		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
-	make -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
+	sed '/install-libs:/s/if/and/g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
 
 ifeq ($(wildcard $(LINUXHDRDIR)),)
 LINUXHDRDIR = $(shell pwd)/linux_header_install_for_linux_user/usr/include
@@ -143,7 +143,7 @@ musl_install_for_linux_user: musl_patch_for_linux_user
 	$(HIDE) cd musl_copy_for_linux_user && mkdir -p $(MUSLBUILDDIR) && cd $(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$(TARGET) --includedir=/usr/include/$(TARGET) --libdir=/usr/$(MULTILIB) \
 		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
-	make -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
+	sed '/install-libs:/s/if/and/g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
 	$(HIDE) cp -rfp $(LINUXHDRDIR)/* $(SYSROOTDIR)/usr/include/$(TARGET)
 
 ifeq ($(ARCH),arm)
@@ -168,11 +168,11 @@ musl_install_for_linux_user$(1): musl_install_for_linux_user
 	$$(HIDE) cd musl_copy_for_linux_user && mkdir -p $$(MUSLBUILDDIR) && cd $$(MUSLBUILDDIR) && \
 	../configure --prefix=/usr --target=$$(TARGET) --libdir=/usr/$$(MULTILIB) \
 		CC="$$(CC)" CROSS_COMPILE="$$(CROSS_COMPILE)" CFLAGS="$$(CFLAGS)" >/dev/null && \
-	make -sj install-libs DESTDIR=$$(SYSROOTDIR)
+	sed '/install-libs:/s/if/and/g' Makefile | make -f- -sj install-libs DESTDIR=$$(SYSROOTDIR)
 
 ifeq ($$(BUILD_DEBUG),true)
-musl_install_for_liteos_a_user$(1): CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I $$(shell $$(CC) -print-file-name=)include
-musl_install_for_liteos_a_user$(1): LDFLAGS = -L $$(dir $$(shell $$(CC) -print-libgcc-file-name)) -lunwind -L lib -ldl
+musl_install_for_liteos_a_user$(1): CFLAGS += -funwind-tables -fasynchronous-unwind-tables -rdynamic -I "$$(shell $$(CC) -print-file-name=include)"
+musl_install_for_liteos_a_user$(1): LDFLAGS = $$(shell $$(CC) -print-file-name=libunwind.a) -Wl,--no-dependent-libraries
 endif
 
 musl_install_for_liteos_a_user$(1): override ARCH_CFLAGS = $$($(2))
@@ -181,7 +181,7 @@ musl_install_for_liteos_a_user$(1): musl_install_for_liteos_a_user
 	../configure --prefix=/usr --target=$$(TARGET) --libdir=/usr/$$(MULTILIB) \
 		$$(if $$(LDFLAGS),LDFLAGS="$$(LDFLAGS)",) \
 		CC="$$(CC)" CROSS_COMPILE="$$(CROSS_COMPILE)" CFLAGS="$$(CFLAGS)" >/dev/null && \
-	make -sj install-libs DESTDIR=$$(SYSROOTDIR)
+	sed '/install-libs:/s/if/and/g' Makefile | make -f- -sj install-libs DESTDIR=$$(SYSROOTDIR)
 
 endif
 endef
