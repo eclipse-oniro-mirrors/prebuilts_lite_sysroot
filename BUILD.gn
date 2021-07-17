@@ -28,8 +28,8 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 group("sysroot") {
-    print("ohos_build_compiler:", ohos_build_compiler)
-    if (ohos_build_compiler == "clang") {
-        deps = [ "build" ]
-    }
+  print("ohos_build_compiler:", ohos_build_compiler)
+  if (ohos_build_compiler == "clang") {
+    deps = [ "build" ]
+  }
 }
