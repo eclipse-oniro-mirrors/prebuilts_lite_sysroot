@@ -31,9 +31,9 @@ import("//build/lite/config/component/lite_component.gni")
 
 targets = ""
 if (ohos_kernel_type == "liteos_a") {
-    targets = "liteos_a_user"
+  targets = "liteos_a_user"
 } else if (ohos_kernel_type == "linux") {
-    targets = "linux_user"
+  targets = "linux_user"
 }
 
 assert(targets != "", "Unsupported ohos_kernel_type: $ohos_kernel_type")
@@ -46,36 +46,40 @@ group("mark_as_prebuilts") {
 }
 
 build_ext_component("build_sysroot") {
-    deps = [ ":mark_as_prebuilts" ]
-    if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
-        exec_path = rebase_path(target_out_dir)
-        makefile = rebase_path("Makefile", exec_path)
-        command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
-        command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
-        command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
-        if (ohos_kernel_type == "linux") {
-            deps += [ "//kernel/linux/patches:linux_kernel" ]
-            command += " LINUXDIR="+rebase_path("$root_out_dir/kernel/linux-4.19")
-            command += " PREBUILTLINUXHDRDIR="+rebase_path("//kernel/linux/patches/linux-4.19/prebuilts/usr/include")
-        }
-    } else {
-        command = "echo $board_configed_sysroot"
+  deps = [ ":mark_as_prebuilts" ]
+  exec_path = rebase_path(target_out_dir)
+  if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
+    makefile = rebase_path("Makefile", exec_path)
+    command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
+    command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
+    command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
+    if (ohos_kernel_type == "linux") {
+      deps += [ "//kernel/linux/patches:linux_kernel" ]
+      command += " LINUXDIR=" + rebase_path("$root_out_dir/kernel/linux-4.19")
+      command += " PREBUILTLINUXHDRDIR=" + rebase_path("//kernel/linux/patches/linux-4.19/prebuilts/usr/include")
     }
+  } else {
+    command = "true"
+  }
 
-    # copy standard libraries libc.so and libc++.so to lib out dir
-    libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
-    libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
-    lib_out_dir = rebase_path("$root_out_dir/libs/")
-    command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
+  # copy standard libraries libc.so and libc++.so to lib out dir
+  libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
+  libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
+  lib_out_dir = rebase_path("$root_out_dir/libs/")
+  command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
 }
 
 config("sysroot_flags") {
-    cflags = [ "--target=$target_triple", "--sysroot=$sysroot_path" ]
-    cflags_cc = cflags
-    ldflags = cflags
+  cflags = [
+    "--target=$target_triple",
+    "--sysroot=$sysroot_path",
+  ]
+  cflags_cc = cflags
+  ldflags = cflags
+  asmflags = cflags
 }
 
 group("build") {
-    all_dependent_configs = [ ":sysroot_flags" ]
-    deps = [ ":build_sysroot" ]
+  all_dependent_configs = [ ":sysroot_flags" ]
+  deps = [ ":build_sysroot" ]
 }
