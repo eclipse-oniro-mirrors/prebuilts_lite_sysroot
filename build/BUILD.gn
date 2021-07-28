@@ -52,7 +52,10 @@ build_ext_component("build_sysroot") {
     makefile = rebase_path("Makefile", exec_path)
     command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
     command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
-    command += " BUILD_DEBUG=false BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
+    command += " BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
+    if (ohos_build_type == "debug") {
+        command += " BUILD_DEBUG=true"
+    }
     if (ohos_kernel_type == "linux") {
       deps += [ "//kernel/linux/patches:linux_kernel" ]
       command += " LINUXDIR=" + rebase_path("$root_out_dir/kernel/linux-4.19")
