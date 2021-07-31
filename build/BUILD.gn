@@ -68,8 +68,29 @@ build_ext_component("build_sysroot") {
   # copy standard libraries libc.so and libc++.so to lib out dir
   libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
   libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
-  lib_out_dir = rebase_path("$root_out_dir/libs/")
+  lib_out_dir = rebase_path("$root_out_dir/unstripped/usr/lib", exec_path)
   command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
+
+  outputs = [
+    "$root_out_dir/unstripped/usr/lib/libc.so",
+    "$root_out_dir/unstripped/usr/lib/libc++.so",
+  ]
+}
+
+action_foreach("strip") {
+  deps = [ ":build_sysroot" ]
+  script = "//build/lite/run_shell_cmd.py"
+  sources = [
+    "$root_out_dir/unstripped/usr/lib/libc.so",
+    "$root_out_dir/unstripped/usr/lib/libc++.so",
+  ]
+  outputs = [ "$root_out_dir/{{source_file_part}}" ]
+  args = [
+    "$ohos_current_strip_command",
+    "{{source}}",
+    "-o",
+    rebase_path("$root_out_dir/{{source_file_part}}", root_build_dir),
+  ]
 }
 
 config("sysroot_flags") {
