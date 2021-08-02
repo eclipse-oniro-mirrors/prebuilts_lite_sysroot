@@ -84,12 +84,12 @@ action_foreach("strip") {
     "$root_out_dir/unstripped/usr/lib/libc.so",
     "$root_out_dir/unstripped/usr/lib/libc++.so",
   ]
-  outputs = [ "$root_out_dir/{{source_file_part}}" ]
+  outputs = [ "$root_out_dir/libs/{{source_file_part}}" ]
   args = [
     "$ohos_current_strip_command",
     "{{source}}",
     "-o",
-    rebase_path("$root_out_dir/{{source_file_part}}", root_build_dir),
+    rebase_path("$root_out_dir/libs/{{source_file_part}}", root_build_dir),
   ]
 }
 
