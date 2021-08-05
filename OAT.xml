@@ -28,7 +28,7 @@
         </policylist>
         <filefilterlist>
             <filefilter name="defaultFilter" desc="Files not to check">
-                <!--filteritem type="filename" name="COPYRIGHT" desc="COPYRIGHT文件说明MIT license"/-->
+                <filteritem type="filename" name="COPYRIGHT" desc="COPYRIGHT文件说明MIT license"/>
             </filefilter>
             <filefilter name="defaultFilter" desc="Files not to check">
                 <!--filteritem type="filename" name="*.uvwxyz" desc="Describe the reason for filtering scan results"/-->
