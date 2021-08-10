@@ -148,6 +148,7 @@ musl_install_for_linux_user: musl_patch_for_linux_user
 		CC="$(CC)" CROSS_COMPILE="$(CROSS_COMPILE)" CFLAGS="$(CFLAGS)" >/dev/null && \
 	sed '/install-libs:/s/if/and/g' Makefile | make -f- -sj install-headers install-libs DESTDIR=$(SYSROOTDIR)
 	$(HIDE) cp -rfp $(LINUXHDRDIR)/* $(SYSROOTDIR)/usr/include/$(TARGET)
+	$(HIDE) test -d $(LINUXHDRDIR)/asm-$(ARCH)/asm && ln -snf asm-$(ARCH)/asm $(SYSROOTDIR)/usr/include/$(TARGET)/
 
 ifeq ($(ARCH),arm)
 ifeq ($(BUILD_ALL_MULTILIB),true)
