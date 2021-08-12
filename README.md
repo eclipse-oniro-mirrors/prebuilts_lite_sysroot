@@ -33,14 +33,12 @@ When bugs in the musl library are fixed or the version is updated, you need to c
 
 ## Usage<a name="section68313135353"></a>
 
--   Add the bin directory to the PATH environment variable. For details about how to set up the compilation environment, see  [Setting Up the Hi3518 Development Environment](https://gitee.com/openharmony/docs/blob/master/en/device-dev/quick-start/setting-up-the-hi3518-development-environment.md)  and  [Setting Up the Hi3516 Development Environment](https://gitee.com/openharmony/docs/blob/master/en/device-dev/quick-start/setting-up-the-hi3516-development-environment.md).
+-   Add the bin directory to the PATH environment variable. For details about how to set up the compilation environment, see  [Quick start](https://gitee.com/openharmony/docs/blob/master/en/device-dev/quick-start/Readme-EN.md).
 -   The following is a sample script for compiling the  **helloworld.c**  program:
 
 ```
 clang -o helloworld helloworld.c -target arm-liteos --sysroot=/my_ohos_root_path/prebuilts/lite/sysroot/
 ```
-
-The compiler directory is  **\~/llvm**.
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
