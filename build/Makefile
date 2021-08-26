@@ -92,7 +92,16 @@ ifeq ($(ARCH),arm)
 	$(HIDE) rm -f $</src/string/arm/memcpy.c
 	$(HIDE) rm -f $</src/string/arm/memcpy_le.S
 	$(HIDE) rm -f $</src/string/arm/memset.S
+	$(HIDE) rm -f $</src/string/arm/strcpy.c
 	$(HIDE) touch $</src/string/arm/strlen.S
+
+CFLAGS += \
+	-D__strlen_armv6t2=strlen \
+	-D__strcpy_arm=strcpy \
+	-D__strcmp_arm=strcmp \
+	-D__memcpy_arm=memcpy \
+	-D__memchr_arm=memchr
+
 endif
 endif
 
