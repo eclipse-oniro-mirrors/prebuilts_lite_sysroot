@@ -41,12 +41,8 @@ assert(targets != "", "Unsupported ohos_kernel_type: $ohos_kernel_type")
 sysroot_path = rebase_path(ohos_current_sysroot)
 arch_cflags = string_join(" ", target_arch_cflags)
 
-# deps to this group to mark the target as prebuilts and/or avoid cycle dependencies
-group("mark_as_prebuilts") {
-}
-
 build_ext_component("build_sysroot") {
-  deps = [ ":mark_as_prebuilts" ]
+  deps = [ "//build/lite:mark_as_prebuilts" ]
   exec_path = rebase_path(target_out_dir)
   if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
     makefile = rebase_path("Makefile", exec_path)
