@@ -94,7 +94,7 @@ ifeq ($(ARCH),arm)
 	$(HIDE) rm -f $</src/string/arm/memcpy_le.S
 	$(HIDE) rm -f $</src/string/arm/memset.S
 	$(HIDE) rm -f $</src/string/arm/strcpy.c
-	$(HIDE) touch $</src/string/arm/strlen.S
+	$(HIDE) true >> $</src/string/arm/strlen.S
 
 CFLAGS += \
 	-D__strlen_armv6t2=strlen \
