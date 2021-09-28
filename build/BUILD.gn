@@ -48,8 +48,12 @@ build_ext_component("build_sysroot") {
   if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
     makefile = rebase_path("Makefile", exec_path)
     command = "make TOPDIR=$ohos_root_path SYSROOTDIR=$sysroot_path TARGETS=$targets -f $makefile"
-    command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
-    command += " BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
+    command += " ARCH=$arch ARCH_CFLAGS=\"$arch_cflags\""
+    if (ohos_build_compiler == "clang") {
+      command += " CLANG=\"$ohos_current_cc_command\" TARGET=$target_triple"
+    } else {
+      command += " GCC=\"$ohos_current_cc_command\""
+    }
     if (ohos_build_type == "debug") {
       command += " BUILD_DEBUG=true"
     }
@@ -63,26 +67,39 @@ build_ext_component("build_sysroot") {
     command = "true"
   }
 
-  # copy standard libraries libc.so and libc++.so to lib out dir
-  libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
-  libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
-  lib_out_dir = rebase_path("$root_out_dir/unstripped/usr/lib", exec_path)
-  command +=
-      " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
+  # copy C/C++ runtime libraries to lib out dir
+  if (ohos_build_compiler == "clang") {
+    libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
+    libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
+    libgcc = ""
+  } else {
+    libcpp = "\$($ohos_current_cxx_command --sysroot=$sysroot_path $arch_cflags -print-file-name=libstdc++.so.6)"
+    libc = "\$($ohos_current_cc_command --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
+    libgcc = "\$($ohos_current_cc_command --sysroot=$sysroot_path $arch_cflags -print-file-name=libgcc_s.so)"
+  }
 
-  outputs = [
-    "$root_out_dir/unstripped/usr/lib/libc.so",
-    "$root_out_dir/unstripped/usr/lib/libc++.so",
-  ]
+  lib_out_dir = rebase_path("$root_out_dir/unstripped/usr/lib", exec_path)
+  command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $libgcc $lib_out_dir\""
+
+  if (ohos_build_compiler == "clang") {
+    outputs = [
+      "$root_out_dir/unstripped/usr/lib/libc.so",
+      "$root_out_dir/unstripped/usr/lib/libc++.so",
+    ]
+  } else {
+    outputs = [
+      "$root_out_dir/unstripped/usr/lib/libc.so",
+      "$root_out_dir/unstripped/usr/lib/libstdc++.so.6",
+      "$root_out_dir/unstripped/usr/lib/libgcc_s.so",
+    ]
+  }
 }
 
 action_foreach("strip") {
   deps = [ ":build_sysroot" ]
   script = "//build/lite/run_shell_cmd.py"
-  sources = [
-    "$root_out_dir/unstripped/usr/lib/libc++.so",
-    "$root_out_dir/unstripped/usr/lib/libc.so",
-  ]
+  set_sources_assignment_filter([ "*.txt" ])
+  sources = get_target_outputs(deps[0])
   outputs = [ "$root_out_dir/libs/{{source_file_part}}" ]
   args = [
     "$ohos_current_strip_command",
@@ -93,10 +110,17 @@ action_foreach("strip") {
 }
 
 config("sysroot_flags") {
-  cflags = [
-    "--target=$target_triple",
-    "--sysroot=$sysroot_path",
-  ]
+  if (ohos_build_compiler == "clang") {
+    cflags = [
+      "--target=$target_triple",
+      "--sysroot=$sysroot_path",
+    ]
+  } else {
+    cflags = [
+      "--sysroot=$sysroot_path",
+      "-specs=musl-gcc.specs",
+    ]
+  }
   cflags_cc = cflags
   ldflags = cflags
   asmflags = cflags
