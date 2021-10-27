@@ -42,7 +42,8 @@ sysroot_path = rebase_path(ohos_current_sysroot)
 arch_cflags = string_join(" ", target_arch_cflags)
 
 build_ext_component("build_sysroot") {
-  deps = [ "//build/lite:mark_as_prebuilts" ]
+  no_default_deps = true
+  deps = []
   exec_path = rebase_path(target_out_dir)
   if (!defined(board_configed_sysroot) || board_configed_sysroot == "") {
     makefile = rebase_path("Makefile", exec_path)
@@ -50,12 +51,13 @@ build_ext_component("build_sysroot") {
     command += " ARCH=$arch TARGET=$target_triple ARCH_CFLAGS=\"$arch_cflags\""
     command += " BUILD_ALL_MULTILIB=false CLANG=\"$ohos_current_cc_command\""
     if (ohos_build_type == "debug") {
-        command += " BUILD_DEBUG=true"
+      command += " BUILD_DEBUG=true"
     }
     if (ohos_kernel_type == "linux") {
       deps += [ "//kernel/linux/build:linux_kernel" ]
       command += " LINUXDIR=" + rebase_path("$root_out_dir/kernel/linux-4.19")
-      command += " PREBUILTLINUXHDRDIR=" + rebase_path("//kernel/linux/patches/linux-4.19/prebuilts/usr/include")
+      command += " PREBUILTLINUXHDRDIR=" + rebase_path(
+                     "//kernel/linux/patches/linux-4.19/prebuilts/usr/include")
     }
   } else {
     command = "true"
@@ -65,7 +67,8 @@ build_ext_component("build_sysroot") {
   libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
   libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
   lib_out_dir = rebase_path("$root_out_dir/unstripped/usr/lib", exec_path)
-  command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
+  command +=
+      " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $lib_out_dir\""
 
   outputs = [
     "$root_out_dir/unstripped/usr/lib/libc.so",
@@ -77,8 +80,8 @@ action_foreach("strip") {
   deps = [ ":build_sysroot" ]
   script = "//build/lite/run_shell_cmd.py"
   sources = [
-    "$root_out_dir/unstripped/usr/lib/libc.so",
     "$root_out_dir/unstripped/usr/lib/libc++.so",
+    "$root_out_dir/unstripped/usr/lib/libc.so",
   ]
   outputs = [ "$root_out_dir/libs/{{source_file_part}}" ]
   args = [
