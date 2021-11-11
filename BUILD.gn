@@ -32,4 +32,7 @@ group("sysroot") {
   if (ohos_build_compiler == "clang") {
     deps = [ "build" ]
   }
+  if (ohos_kernel_type == "liteos_m" && !ohos_kernel_is_prebuilt) {
+    all_dependent_configs = [ "//kernel/liteos_m:public" ]
+  }
 }
