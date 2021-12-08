@@ -69,30 +69,31 @@ build_ext_component("build_sysroot") {
 
   # copy C/C++ runtime libraries to lib out dir
   if (ohos_build_compiler == "clang") {
-    libcpp = "\$($ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc++.so)"
-    libc = "\$($ohos_current_cc_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
-    libgcc = ""
+    runtime_libs = [
+      "libc++.so",
+      "libc.so",
+    ]
+    compiler_cmd = "$ohos_current_cxx_command --target=$target_triple --sysroot=$sysroot_path $arch_cflags"
   } else {
-    libcpp = "\$($ohos_current_cxx_command --sysroot=$sysroot_path $arch_cflags -print-file-name=libstdc++.so.6)"
-    libc = "\$($ohos_current_cc_command --sysroot=$sysroot_path $arch_cflags -print-file-name=libc.so)"
-    libgcc = "\$($ohos_current_cc_command --sysroot=$sysroot_path $arch_cflags -print-file-name=libgcc_s.so)"
+    runtime_libs = [
+      "libstdc++.so.6",
+      "libc.so",
+      "libgcc_s.so.1",
+    ]
+    compiler_cmd =
+        "$ohos_current_cxx_command --sysroot=$sysroot_path $arch_cflags"
+  }
+
+  libs = []
+  outputs = []
+  foreach(lib, runtime_libs) {
+    libs += [ "\$($compiler_cmd -print-file-name=$lib)" ]
+    outputs += [ "$root_out_dir/unstripped/usr/lib/$lib" ]
   }
 
   lib_out_dir = rebase_path("$root_out_dir/unstripped/usr/lib", exec_path)
-  command += " && mkdir -p $lib_out_dir && sh -c \"cp -f $libcpp $libc $libgcc $lib_out_dir\""
-
-  if (ohos_build_compiler == "clang") {
-    outputs = [
-      "$root_out_dir/unstripped/usr/lib/libc.so",
-      "$root_out_dir/unstripped/usr/lib/libc++.so",
-    ]
-  } else {
-    outputs = [
-      "$root_out_dir/unstripped/usr/lib/libc.so",
-      "$root_out_dir/unstripped/usr/lib/libstdc++.so.6",
-      "$root_out_dir/unstripped/usr/lib/libgcc_s.so",
-    ]
-  }
+  command += " && mkdir -p $lib_out_dir && sh -c \"cp -f " +
+             string_join(" ", libs) + " $lib_out_dir\""
 }
 
 action_foreach("strip") {
